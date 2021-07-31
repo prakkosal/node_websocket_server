@@ -1,7 +1,7 @@
-import WebSocket from 'ws';
+var WebSocket = require('ws');
 try {
   //const ws = new WebSocket('ws://localhost:8000',"KV-Echo", {auth:"kosalimsi00admin"});
-  const ws = new WebSocket('ws://localhost:8000',"KV-Echo", {auth:"kosalimsi00admin"});
+  const ws = new WebSocket.WebSocket('ws://localhost:8000',"KV-Echo", {auth:"kosalimsi00admin"});
   ws.on('open', function open() {
     ws.send('something');
   });
