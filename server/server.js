@@ -4,6 +4,10 @@
 var WebSocket = require("ws")
 var createServer  = require('http');
 var ServerKey = require('./serverKey');
+//Get Server IP
+var os = require("os");
+var ip = require("ip");
+
 try {
   const server = createServer.createServer();
   const wss = new WebSocket.Server({ noServer: true });
@@ -20,19 +24,23 @@ try {
 
 server.on('upgrade', function upgrade(request, socket, head) {
      var serverkey = new ServerKey();
-     console.log(serverkey.key());
-      console.log( request.url.split("=")[1]);
-      console.log(request.headers['sec-websocket-protocol']);
+      if(serverkey.key() != request.url.split("=")[1]  || serverkey.protocol() != request.headers['sec-websocket-protocol']){
+          console.log("there are something when wrong");
+          socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+          socket.destroy();
+          return;
+      }
+      console.log("correctely");
       wss.handleUpgrade(request, socket, head, function done(ws) {
         wss.emit('connection', ws, request , request.socket.remoteAddress);
       });
   });
 
   server.listen(8000, function(){
-    console.log('Listening on http://localhost:8000');
+    //var networkInterfaces = os.networkInterfaces();
+    console.log(networkInterfaces);
+    console.log('Listening on http://'+ip.address()+':8000');
   }); 
-
 } catch (error) {
   console.log(error)
 }
-
